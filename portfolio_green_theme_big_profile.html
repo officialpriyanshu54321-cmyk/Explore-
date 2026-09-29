@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ℙ𝕣𝕚𝕪𝕒𝕟𝕤𝕙𝕦 𝕜𝕦𝕞𝕒𝕣 - Personal Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #071a16;
+            --card-bg: #102a23;
+            --accent-purple: #10b981;
+            --accent-cyan: #d6b45c;
+            --text-primary: #f3f7f4;
+            --text-secondary: #a7b9af;
+            --border-color: #25483a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 24px;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* Top Bar */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            color: white;
+            border: 2px solid var(--accent-cyan);
+            object-fit: cover;
+        }
+
+        .brand-name {
+            font-weight: bold;
+            font-size: 15px;
+            color: var(--accent-cyan);
+        }
+
+        /* Left Drawer Navigation */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 200;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 250px;
+            height: 100%;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            z-index: 201;
+            transition: transform 0.3s ease;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .drawer.active {
+            transform: translateX(280px);
+        }
+
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        /* Main Sections Layout */
+        main {
+            padding: 14px;
+        }
+
+        section {
+            margin-bottom: 18px;
+            scroll-margin-top: 65px;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: var(--accent-purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Cards with Blinking Dots Effect */
+        .card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            overflow: hidden; /* Contains blinking dots within card boundaries */
+        }
+
+        /* Blinking Dots Background Overlay */
+        .blinking-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .dot {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ffffff, 0 0 10px var(--accent-cyan);
+            animation: pulseFade ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseFade {
+            0% {
+                opacity: 0.1;
+                transform: scale(0.6);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0.1;
+                transform: scale(0.6);
+            }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2; /* Keeps content clear & above dots */
+        }
+
+        /* Hero / Home Section */
+        .hero-card {
+            text-align: center;
+            padding: 20px 14px;
+        }
+
+        .hero-avatar {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 10px auto;
+            font-size: 22px;
+        }
+
+        .hero-title {
+            font-size: 19px;
+            margin-bottom: 6px;
+        }
+
+        .intro-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-bottom: 14px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        /* About Grid */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Skill Tags */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-purple);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Hobbies Grid */
+        .hobby-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .hobby-card {
+            padding: 12px;
+        }
+
+        .hobby-title {
+            font-size: 13px;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .hobby-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.35;
+        }
+
+        /* Forms & Inputs */
+        input, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-color);
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent-purple);
+        }
+
+        button.submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-cyan);
+            color: #0b0f19;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+            z-index: 300;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Compact glass cards and page navigation */
+        .card, .info-box {
+            background: rgba(16, 42, 35, 0.72);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 8px 22px rgba(0,0,0,0.12);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .card { padding: 10px; margin-bottom: 7px; border-radius: 12px; }
+        .info-box { padding: 8px; }
+        .hero-card { padding: 20px 14px; }
+        .hobby-card { padding: 9px; }
+        .hero-avatar { width: 120px; height: 120px; font-size: 32px; }
+        .hero-title {
+            background: linear-gradient(90deg, #f0abfc, #22d3ee, #d6b45c);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .intro-text {
+            background: linear-gradient(90deg, #a7f3d0, #6ee7b7, #f3df9b);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        main { padding-bottom: 90px; }
+        main > section { display: none; }
+        main > section.active-page { display: block; animation: pageFade .28s ease both; }
+        @keyframes pageFade { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+        .drawer {
+            top: auto; bottom: 88px; left: 12px; width: 250px; height: auto; max-height: 70vh;
+            overflow-y: auto; border: 1px solid rgba(214,180,92,.35); border-radius: 16px;
+            transform: translateX(-125%); transition: transform .38s cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 14px 38px rgba(0,0,0,.4); backdrop-filter: blur(18px);
+        }
+        .drawer.active { transform: translateX(0); }
+        .nav-cube {
+            position: fixed; left: 14px; bottom: 14px; z-index: 250; width: 92px; height: 66px;
+            border: 1px solid #d6b45c; border-radius: 13px;
+            background: linear-gradient(145deg, #292044, #111827 65%, #164e63);
+            color: #d6b45c; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px; box-shadow: 5px 7px 0 rgba(0,0,0,.35), 0 0 18px rgba(250,204,21,.16);
+            cursor: pointer; transform: perspective(240px) rotateY(-7deg); transition: transform .2s, box-shadow .2s;
+        }
+        .nav-cube:active { transform: perspective(240px) rotateY(0) scale(.96); box-shadow: 2px 3px 0 rgba(0,0,0,.35); }
+        .cube-icon { font-size: 23px; line-height: 1; }
+        .cube-label { font-size: 11px; font-weight: 900; letter-spacing: 1px; color: #d6b45c; }
+        @media (min-width: 600px) { .nav-cube { left: calc(50% - 220px); } .drawer { left: calc(50% - 226px); } }
+    
+        /* Latest spacing and card-size refinements */
+        main > section:not(#home) > .card {
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        main > section:not(#home) .info-box {
+            padding: 12px;
+            border-radius: 11px;
+        }
+        main > section:not(#home) .info-label {
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+        main > section:not(#home) .info-value {
+            font-size: 14px !important;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+        main > section:not(#home) .card-content {
+            font-size: 14px !important;
+            line-height: 1.65 !important;
+        }
+        main > section:not(#home) .hobby-card {
+            padding: 12px;
+            min-height: 88px;
+        }
+        .hero-card { padding: 26px 16px; }
+        .hero-title { margin-top: 0; margin-bottom: 18px; }
+        .intro-text { margin-top: 0; margin-bottom: 18px; line-height: 1.65; }
+        .hero-card .hero-avatar { width: 120px; height: 120px; font-size: 32px; margin-bottom: 14px; }
+
+        /* Colorful message below the Home page action buttons */
+        .home-tagline {
+            margin: 22px auto 2px;
+            padding: 15px 13px;
+            max-width: 100%;
+            border: 1px solid rgba(6, 182, 212, 0.32);
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(139,92,246,.13), rgba(6,182,212,.10), rgba(250,204,21,.07));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 7px 20px rgba(0,0,0,.14);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .tagline-title {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.5;
+            background: linear-gradient(90deg, #f0abfc, #22d3ee, #d6b45c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 7px;
+        }
+        .home-tagline p {
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+
+        /* Premium music control sits immediately to the right of TAP HERE */
+        .music-control {
+            position: fixed; left: 116px; bottom: 14px; z-index: 250;
+            width: 66px; height: 66px; border: 1px solid rgba(214,180,92,.75);
+            border-radius: 18px; color: #f3f4f6;
+            background: linear-gradient(145deg, rgba(16,65,48,.98), rgba(7,26,22,.98));
+            box-shadow: 0 8px 24px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.12), 0 0 18px rgba(214,180,92,.16);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; cursor: pointer; transition: transform .2s, border-color .2s, box-shadow .2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .music-control:active { transform: scale(.94); }
+        .music-control.playing { border-color: #06b6d4; box-shadow: 0 8px 26px rgba(0,0,0,.4), 0 0 20px rgba(6,182,212,.22); }
+        .music-symbol { font-size: 24px; line-height: 1; }
+        .music-label { font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #e6c76a; }
+        .music-control.playing .music-label { color: #6ee7b7; }
+        @media (min-width: 600px) { .music-control { left: calc(50% - 118px); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header / Top Bar -->
+    <header>
+        <div class="profile-btn">
+            <img src="profile.jpg" alt="PK" class="hero-avatar avatar" onerror="this.outerHTML='<div class=\'avatar\'>PK</div>'">
+            <span class="brand-name">ℙ𝕣𝕚𝕪𝕒𝕟𝕤𝕙𝕦</span>
+        </div>
+        <span style="font-size: 11px; color: var(--text-secondary);">Mobile UI</span>
+    </header>
+
+    <!-- Left Drawer Navigation -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="brand-name">Navigation</span>
+            <button class="close-btn" onclick="toggleDrawer()">✕</button>
+        </div>
+        <nav class="nav-links">
+            <a href="#home" class="nav-item" onclick="navigateTo('home'); return false;">🏠 Home</a>
+            <a href="#about" class="nav-item" onclick="navigateTo('about'); return false;">👤 About Me</a>
+            <a href="#coding" class="nav-item" onclick="navigateTo('coding'); return false;">💻 Coding</a>
+            <a href="#hobbies" class="nav-item" onclick="navigateTo('hobbies'); return false;">🎮 Hobbies</a>
+            <a href="#favorites" class="nav-item" onclick="navigateTo('favorites'); return false;">⭐ Favorites</a>
+            <a href="#love" class="nav-item" onclick="navigateTo('love'); return false;">❤️ My GF</a>
+            <a href="#contact" class="nav-item" onclick="navigateTo('contact'); return false;">📞 Contact</a>
+        </nav>
+    </div>
+
+    <button class="nav-cube" id="navCube" onclick="toggleDrawer()" aria-label="Open navigation">
+        <span class="cube-icon">◆</span><span class="cube-label">TAP HERE</span>
+    </button>
+
+    <audio id="siteMusic" preload="metadata" loop>
+        <source src="qayde-se-slowed-reverb-arijit-singh-pritam-metro-in-dino-sr-lofi_QpUNwD2v.mp3" type="audio/mpeg">
+    </audio>
+    <button class="music-control" id="musicToggle" type="button" aria-label="Play music" aria-pressed="false" onclick="toggleMusic()">
+        <span class="music-symbol" id="musicSymbol">▶</span>
+        <span class="music-label" id="musicLabel">PLAY</span>
+    </button>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section id="home">
+            <div class="card hero-card">
+                <div class="card-content">
+                    <img src="profile.jpg" alt="PK" class="hero-avatar avatar" style="width: 120px; height: 120px;" onerror="this.outerHTML='<div class=\'avatar hero-avatar\'>PK</div>'">
+                    <h1 class="hero-title">ℙ𝕣𝕚𝕪𝕒𝕟𝕤𝕙𝕦 𝕜𝕦𝕞𝕒𝕣</h1>
+                    <p class="intro-text">
+                        "𝙄 𝙚𝙣𝙟𝙤𝙮 𝙩𝙪𝙧𝙣𝙞𝙣𝙜 𝙞𝙙𝙚𝙖𝙨 𝙞𝙣𝙩𝙤 𝙧𝙚𝙖𝙡-𝙬𝙤𝙧𝙡𝙙 𝙥𝙧𝙤𝙟𝙚𝙘𝙩𝙨. 𝙄 𝙡𝙤𝙫𝙚 𝙘𝙤𝙙𝙞𝙣𝙜, 𝙡𝙚𝙖𝙧𝙣𝙞𝙣𝙜 𝙣𝙚𝙬 𝙩𝙝𝙞𝙣𝙜𝙨,𝙖𝙣𝙙 𝙘𝙤𝙣𝙨𝙩𝙖𝙣𝙩𝙡𝙮 𝙞𝙢𝙥𝙧𝙤𝙫𝙚 𝙢𝙮 𝙨𝙚𝙡𝙛"
+                    </p>
+                    <div class="quick-actions">
+                        <a class="action-btn" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=officialpriyanshu54321@gmail.com" target="_blank" rel="noopener">📧 Email</a>
+                        <button class="action-btn" onclick="copyText('9027780827')">🎮 FF UID</button>
+                    </div>
+                    <div class="home-tagline">
+                        <div class="tagline-title">✨ Dream It. Code It. Make It Real. 🚀</div>
+                        <p>Every great idea starts with a dream. Keep learning, keep creating, and never stop exploring.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about">
+            <h2>👤 About Me</h2>
+            <div class="card">
+                <div class="card-content">
+                    <div class="about-grid">
+                        <div class="info-box">
+                            <div class="info-label">Name</div>
+                            <div class="info-value">ℙ𝕣𝕚𝕪𝕒𝕟𝕤𝕙𝕦</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">𝘽𝙞𝙝𝙖𝙧, 𝙎𝙖𝙝𝙖𝙧𝙨𝙖</div>
+                        </div>
+                    </div>
+                    <div class="info-box" style="margin-top: 8px;">
+                        <div class="info-label">Who I Am</div>
+                        <div class="info-value" style="font-size: 11px;">"𝘼 𝙘𝙪𝙧𝙞𝙤𝙪𝙨 𝙡𝙚𝙖𝙧𝙣𝙚𝙧 𝙚𝙭𝙥𝙡𝙤𝙧𝙞𝙣𝙜 𝙘𝙤𝙙𝙞𝙣𝙜 𝙖𝙣𝙙 𝙩𝙚𝙘𝙝𝙣𝙤𝙡𝙤𝙜𝙮."</div>
+                    </div>
+                    <div class="info-box" style="margin-top: 8px;">
+                        <div class="info-label">Mindset</div>
+                        <div class="info-value" style="font-size: 11px;">"𝙇𝙚𝙖𝙧𝙣 𝙨𝙤𝙢𝙚𝙩𝙝𝙞𝙣𝙜 𝙣𝙚𝙬 𝙖𝙣𝙙 𝙞𝙢𝙥𝙧𝙤𝙫𝙚 𝙚𝙫𝙚𝙧𝙮 𝙙𝙖𝙮."</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coding Section -->
+        <section id="coding">
+            <h2>💻 Coding & Skills</h2>
+            <div class="card">
+                <div class="card-content">
+                    <div class="skill-tags">
+                        <span class="tag">HTML/CSS</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Web Dev</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        <strong style="color: var(--accent-cyan);">Milestone Timeline:</strong>
+                        <ul style="margin-left: 16px; margin-top: 6px; line-height: 1.5; font-size: 11px;">
+                            <li>🚀 Started tech journey</li>
+                            <li>⚙️ Built interactive web projects</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hobbies Section -->
+        <section id="hobbies">
+            <h2>🎮 Hobbies</h2>
+            <div class="hobby-grid">
+                <div class="card hobby-card">
+                    <div class="card-content">
+                        <div class="hobby-title">💻 Coding</div>
+                        <div class="hobby-desc">Building interactive apps & projects.</div>
+                    </div>
+                </div>
+                <div class="card hobby-card">
+                    <div class="card-content">
+                        <div class="hobby-title">🎮 Gaming</div>
+                        <div class="hobby-desc">Playing Free Fire MAX.</div>
+                    </div>
+                </div>
+                <div class="card hobby-card">
+                    <div class="card-content">
+                        <div class="hobby-title">🎵 Music</div>
+                        <div class="hobby-desc">Listening to favorite tracks.</div>
+                    </div>
+                </div>
+                <div class="card hobby-card">
+                    <div class="card-content">
+                        <div class="hobby-title">📖 Learning</div>
+                        <div class="hobby-desc">Exploring new tech and tools daily.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Favorites Section -->
+        <section id="favorites">
+            <h2>⭐ Favorites</h2>
+            <div class="card">
+                <div class="card-content" style="font-size: 12px; line-height: 1.6;">
+                    <div>🎨 <strong>Color:</strong> Navy Blue & Cyan</div>
+                    <div>🎵 <strong>Artist:</strong> Arijit Singh</div>
+                    <div>🎮 <strong>Game:</strong> Free Fire MAX</div>
+                    <div>💡 <strong>Inspiration:</strong> "Keep learning. Keep building."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Love Section -->
+        <section id="love">
+            <h2>❤️ My GF</h2>
+            <div class="card" style="text-align: center;">
+                <div class="card-content">
+                    <div style="font-size: 13px; font-weight: bold; color: var(--accent-purple);">Status</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Currently Unavailable.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <h2>📞 Contact Me</h2>
+            <div class="card">
+                <div class="card-content">
+                    <div style="font-size: 11px; margin-bottom: 10px; line-height: 1.5;">
+                        <div>📧 <strong>Email:</strong> officialpriyanshu54321@gmail.com</div>
+                        <div>📸 <strong>Instagram:</strong> <a href="https://www.instagram.com/its_priyanshu223?stkn=MXJvNmU4ZXF4eWdpag==" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">@its_priyanshu223</a></div>
+                        <div>🎮 <strong>FF UID:</strong> 9027780827</div>
+                    </div>
+
+                    <form onsubmit="handleFormSubmit(event)">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea rows="3" placeholder="Message" required></textarea>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Slide navigation options in/out and show only one section at a time
+        function toggleDrawer() {
+            document.getElementById('drawer').classList.toggle('active');
+            document.getElementById('drawerOverlay').classList.toggle('active');
+        }
+        function navigateTo(sectionId) {
+            document.querySelectorAll('main > section').forEach(section => {
+                section.classList.toggle('active-page', section.id === sectionId);
+            });
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + sectionId);
+            });
+            document.getElementById('drawer').classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Music keeps playing while visitors switch between website sections.
+        async function toggleMusic() {
+            const audio = document.getElementById('siteMusic');
+            const button = document.getElementById('musicToggle');
+            const symbol = document.getElementById('musicSymbol');
+            const label = document.getElementById('musicLabel');
+            if (audio.paused) {
+                try {
+                    await audio.play();
+                    button.classList.add('playing');
+                    button.setAttribute('aria-label', 'Pause music');
+                    button.setAttribute('aria-pressed', 'true');
+                    symbol.textContent = 'Ⅱ';
+                    label.textContent = 'PAUSE';
+                } catch (error) {
+                    showToast('Music could not play. Please try again.');
+                }
+            } else {
+                audio.pause();
+                button.classList.remove('playing');
+                button.setAttribute('aria-label', 'Play music');
+                button.setAttribute('aria-pressed', 'false');
+                symbol.textContent = '▶';
+                label.textContent = 'PLAY';
+            }
+        }
+
+        // Copy Text Function
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copied: " + text);
+            });
+        }
+
+        // Toast Popup
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Form Submit Simulation
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            showToast("Message recorded locally!");
+            e.target.reset();
+        }
+
+        // Dynamic Blinking Dots Generator inside Cards
+        document.addEventListener('DOMContentLoaded', () => {
+            navigateTo('home');
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'blinking-dots';
+                
+                // Generates 6 to 10 random dots per card
+                const dotCount = Math.floor(Math.random() * 5) + 6; 
+                for (let i = 0; i < dotCount; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    
+                    // Random sizes (2px - 4px)
+                    const size = Math.random() * 2 + 2;
+                    dot.style.width = `${size}px`;
+                    dot.style.height = `${size}px`;
+                    
+                    // Random positions inside card
+                    dot.style.top = `${Math.random() * 90 + 5}%`;
+                    dot.style.left = `${Math.random() * 90 + 5}%`;
+                    
+                    // Random animation timing & duration
+                    dot.style.animationDuration = `${Math.random() * 2 + 1.5}s`;
+                    dot.style.animationDelay = `${Math.random() * 2}s`;
+                    
+                    dotsContainer.appendChild(dot);
+                }
+                card.prepend(dotsContainer);
+            });
+        });
+    </script>
+</body>
+</html>
